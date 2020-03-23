@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+from __future__ import print_function
+import rospy
+import can
+import threading
+import struct
+import numpy
+from std_msgs.msg import Float32
+from ackermann_msgs.msg import AckermannDriveStamped
+
+
+# IDENTYFIATORY PUBLIKOWANYCH RAMEK
+SPEED_PUB_ID = 0x1A
+ANGLE_PUB_ID = 0x1B
+
+# IDENTYFIATORY SUBSKRYBOWANYCH RAMEK
+SPEED_SUB_ID = int("0x1C", 16)
+DISTANCE_SUB_ID = int("0x1D", 16)
+ANGLE_SUB_ID = int("0x1E", 16)
+
+ackermann_angle = 0.0
+ackermann_speed = 0.0
+speed = 0.0
+distance = 0.0
+steering_angle = 0.0
+
+class CanInterface:
+
+    bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate=250000)
+    stop_event = threading.Event()
+
+    def __init__(self, frame_id, frame_data):
+        self.frame_id = frame_id
+        self.frame_data = bytearray(frame_data)
+        self.frame = can.Message(arbitration_id = self.frame_id, data = self.frame_data, is_extended_id = False)
+
+    def can_publisher(self):
+        try:
+            self.bus.send(self.frame)
+            # print("Message sent on {}".format(self.bus.channel_info))
+        except can.CanError:
+            print("Message NOT sent")
+
+    def receive(self, bus, stop_event):
+        """The loop for receiving."""
+        print("Start receiving can_frames")
+        while not stop_event.is_set():
+            recv_frame = bus.recv(1)
+            if recv_frame is not None:
+                # print("rx: {}".format(rx_msg))
+                recv_id = recv_frame.arbitration_id
+                if recv_id == SPEED_SUB_ID:
+                    # print("Otrzymano dane predkosci")
+                    global speed
+                    speed = numpy.float32(struct.unpack('f', recv_frame.data))
+                elif recv_id == DISTANCE_SUB_ID:
+                    # print("Otrzymano dane dystansu")
+                    global distance
+                    distance = numpy.float32(struct.unpack('f', recv_frame.data))
+                elif recv_id == ANGLE_SUB_ID:
+                    # print("Otrzymano dane kata skretu")
+                    global angle
+                    angle = numpy.float32(struct.unpack('f', recv_frame.data))
+                else:
+                    print("Otrzymano nieznane dane")
+                # TODO filtrowanie ramek?
+        print("Stopped receiving can_frames")
+
+    def can_subscriber(self):
+        t_receive = threading.Thread(target=self.receive, args=( self.bus, self.stop_event))
+        t_receive.start()
+
+
+def ackermann_callback(msg):
+    global ackermann_angle
+    ackermann_angle = msg.drive.steering_angle
+    global ackermann_speed
+    ackermann_speed = msg.drive.speed
+
+def main():
+    rospy.init_node('can_node', anonymous=True)
+    rospy.Subscriber('drive', AckermannDriveStamped, ackermann_callback)
+    speed_pub = rospy.Publisher('speed', Float32, queue_size=10)
+    distance_pub = rospy.Publisher('distance', Float32, queue_size=10)
+    angle_pub = rospy.Publisher('steering_angle', Float32, queue_size=10)
+
+    speed_bytes = struct.pack('f', ackermann_speed)
+    can_pub_speed = CanInterface(SPEED_PUB_ID, speed_bytes)
+    angle_bytes = [9, 8, 7, 6]
+    can_pub_angle = CanInterface(ANGLE_PUB_ID , angle_bytes)
+
+    # TODO zrobic cos zeby nie trzeba bylo tworzyc obiektu z danymi
+    # #################################
+    can_sub = CanInterface(0x01,[0])
+    can_sub.can_subscriber()
+    # #################################
+
+    rate = rospy.Rate(10) # 10hz
+    while not rospy.is_shutdown():
+        speed_pub.publish(speed)
+        distance_pub.publish(distance)
+        angle_pub.publish(steering_angle)
+        rate.sleep()
+        can_pub_speed.can_publisher()
+        can_pub_angle.can_publisher()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
+    CanInterface.stop_event.set()
