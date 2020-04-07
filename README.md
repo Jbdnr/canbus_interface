@@ -11,6 +11,7 @@
 ## Required Software
 - `sudo apt install ros-melodic-ackermann-msgs`
 - `pip install python-can`
+- `sudo apt install can-utils`
 
 ## Additional Information
 https://elinux.org/Bringing_CAN_interface_up

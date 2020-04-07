@@ -6,17 +6,18 @@ import threading
 import struct
 import numpy
 from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 from ackermann_msgs.msg import AckermannDriveStamped
 
 
 # IDENTYFIATORY PUBLIKOWANYCH RAMEK
-SPEED_PUB_ID = 0x1A
-ANGLE_PUB_ID = 0x1B
+SPEED_PUB_ID = 0x1A # TBD
+STEERING_PUB_ID = 0x1B # TBD
 
 # IDENTYFIATORY SUBSKRYBOWANYCH RAMEK
-SPEED_SUB_ID = int("0x1C", 16)
-DISTANCE_SUB_ID = int("0x1D", 16)
-ANGLE_SUB_ID = int("0x1E", 16)
+SPEED_FEEDBACK_ID = 0x31D
+STEERING_FEEDBACK_ID = 0x32D
+DISTANCE_FEEDBACK_ID = 0x33D
 
 ackermann_angle = 0.0
 ackermann_speed = 0.0
@@ -37,33 +38,29 @@ class CanInterface:
     def can_publisher(self):
         try:
             self.bus.send(self.frame)
-            # print("Message sent on {}".format(self.bus.channel_info))
         except can.CanError:
             print("Message NOT sent")
 
     def receive(self, bus, stop_event):
-        """The loop for receiving."""
         print("Start receiving can_frames")
         while not stop_event.is_set():
             recv_frame = bus.recv(1)
             if recv_frame is not None:
-                # print("rx: {}".format(rx_msg))
                 recv_id = recv_frame.arbitration_id
-                if recv_id == SPEED_SUB_ID:
+                if recv_id == int(str(SPEED_FEEDBACK_ID), 0):
                     # print("Otrzymano dane predkosci")
                     global speed
-                    speed = numpy.float32(struct.unpack('f', recv_frame.data))
-                elif recv_id == DISTANCE_SUB_ID:
+                    speed = numpy.float64(struct.unpack('>d', recv_frame.data))
+                elif recv_id == int(str(DISTANCE_FEEDBACK_ID), 0):
                     # print("Otrzymano dane dystansu")
                     global distance
-                    distance = numpy.float32(struct.unpack('f', recv_frame.data))
-                elif recv_id == ANGLE_SUB_ID:
+                    distance = numpy.float64(struct.unpack('>d', recv_frame.data))
+                elif recv_id == int(str(STEERING_FEEDBACK_ID), 0):
                     # print("Otrzymano dane kata skretu")
-                    global angle
-                    angle = numpy.float32(struct.unpack('f', recv_frame.data))
+                    global steering_angle
+                    steering_angle = numpy.float64(struct.unpack('>d', recv_frame.data))
                 else:
                     print("Otrzymano nieznane dane")
-                # TODO filtrowanie ramek?
         print("Stopped receiving can_frames")
 
     def can_subscriber(self):
@@ -77,21 +74,28 @@ def ackermann_callback(msg):
     global ackermann_speed
     ackermann_speed = msg.drive.speed
 
+def get_pathology_data_frame(data):
+    if data >= 0:
+        sign = ['\x00', '\x01']
+    elif data < 0:
+        sign = ['\x00', '\x00']
+    #### TODO normalizacja ####
+    data = int(abs(data))
+    ###########################
+    bytes = struct.pack('>H', data) #big-endian unsigned short
+    data_frame = sign + list(bytes) #znak na poczatku ramki danych
+    return bytearray(data_frame)
+
 def main():
     rospy.init_node('can_node', anonymous=True)
     rospy.Subscriber('drive', AckermannDriveStamped, ackermann_callback)
-    speed_pub = rospy.Publisher('speed', Float32, queue_size=10)
-    distance_pub = rospy.Publisher('distance', Float32, queue_size=10)
-    angle_pub = rospy.Publisher('steering_angle', Float32, queue_size=10)
+    speed_pub = rospy.Publisher('speed', Float64, queue_size=10)
+    distance_pub = rospy.Publisher('distance', Float64, queue_size=10)
+    angle_pub = rospy.Publisher('steering_angle', Float64, queue_size=10)
 
-    speed_bytes = struct.pack('f', ackermann_speed)
-    can_pub_speed = CanInterface(SPEED_PUB_ID, speed_bytes)
-    angle_bytes = [9, 8, 7, 6]
-    can_pub_angle = CanInterface(ANGLE_PUB_ID , angle_bytes)
-
-    # TODO zrobic cos zeby nie trzeba bylo tworzyc obiektu z danymi
+    # TODO zmienic tak by nie trzeba bylo tworzyc obiektu z danymi
     # #################################
-    can_sub = CanInterface(0x01,[0])
+    can_sub = CanInterface(0x00,[0])
     can_sub.can_subscriber()
     # #################################
 
@@ -100,9 +104,11 @@ def main():
         speed_pub.publish(speed)
         distance_pub.publish(distance)
         angle_pub.publish(steering_angle)
-        rate.sleep()
+        can_pub_speed = CanInterface(SPEED_PUB_ID, get_pathology_data_frame(ackermann_speed))
         can_pub_speed.can_publisher()
+        can_pub_angle = CanInterface(STEERING_PUB_ID, get_pathology_data_frame(ackermann_angle))
         can_pub_angle.can_publisher()
+        rate.sleep()
 
 if __name__ == '__main__':
     try:
