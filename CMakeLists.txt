@@ -3,6 +3,7 @@ project(can_interface)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  roslint
   std_msgs
   ackermann_msgs
 )
