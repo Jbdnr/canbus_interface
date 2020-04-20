@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 roslint_python(scripts/can_node)
 
-catkin_package()
+catkin_package(CATKIN_DEPENDS std_msgs ackermann_msgs)
 
 install(PROGRAMS scripts/can_node
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/scripts
