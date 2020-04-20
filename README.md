@@ -1,5 +1,17 @@
 # CAN Interface
 CAN Interface package provides integration between ROS and CAN bus.
+
+# CAN Node
+`can_node` is a python script which implements bidirectional translation between ROS Topics and CAN frames.
+
+### Subscribed topics
+- `/drive` ([ackermann_msgs/AckermannDrive](http://docs.ros.org/api/ackermann_msgs/html/msg/AckermannDrive.html)) This topic contains speed and steering angle data. The data is used to control vehicle.
+
+### Published topics
+- `/speed` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html)) Speed feedback received from can bus.
+- `/distance` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html)) Distance feedback received from can bus.
+- `/steering_angle` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html)) Steering angle feedback received from can bus.
+
 ## Getting Started
 
 ### Prerequisites
@@ -34,14 +46,6 @@ candump vcan0
 
 ##### Monitoring ROS topics
 Using [rqt](http://wiki.ros.org/rqt) package is good option to sending and receiving ROS topics.
-
-## Subscribed topics
-- `/drive`
-
-## Published topics
-- `/speed`
-- `/distance`
-- `/steering_angle`
 
 ## Additional Information
 - https://elinux.org/Bringing_CAN_interface_up
