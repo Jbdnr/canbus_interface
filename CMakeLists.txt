@@ -12,6 +12,10 @@ roslint_python(scripts/can_node)
 
 catkin_package()
 
+install(PROGRAMS scripts/can_node
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/scripts
+)
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
