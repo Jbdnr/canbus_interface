@@ -8,7 +8,11 @@ find_package(catkin REQUIRED COMPONENTS
   ackermann_msgs
 )
 
-catkin_package()
+catkin_package(
+  std_msgs
+  ackermann_msgs
+)
+
 roslint_python(scripts/can_node)
 
 include_directories(
