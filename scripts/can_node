@@ -34,7 +34,7 @@ class CanInterface:
     def __init__(self, frame_id, frame_data):
         self.frame_id = frame_id
         self.frame_data = bytearray(frame_data)
-        self.frame = can.Message(arbitration_id= self.frame_id, data= self.frame_data, is_extended_id= False)
+        self.frame = can.Message(arbitration_id=self.frame_id, data=self.frame_data, is_extended_id=False)
 
     def can_publisher(self):
         try:
