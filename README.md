@@ -8,18 +8,16 @@ CAN Interface package provides integration between ROS and CAN bus.
 - `/drive` ([ackermann_msgs/AckermannDrive](http://docs.ros.org/api/ackermann_msgs/html/msg/AckermannDrive.html)) This topic contains speed and steering angle data. The data is used to control vehicle.
 
 ### Published topics
-- `/speed` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html)) Speed feedback received from can bus.
-- `/distance` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html)) Distance feedback received from can bus.
-- `/steering_angle` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html)) Steering angle feedback received from can bus.
+- `/speed` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html))[10 Hz] Speed feedback received from can bus.
+- `/distance` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html))[10 Hz] Distance feedback received from can bus.
+- `/steering_angle` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html))[10 Hz] Steering angle feedback received from can bus.
 
 ## Getting Started
 
 ### Prerequisites
-You need to install following software:
+Install required software by typing following command:
 ```
-sudo apt install ros-melodic-ackermann-msgs
-pip install python-can
-sudo apt install can-utils
+rosdep install can_interface
 ```
 
 ### Testing
@@ -28,7 +26,7 @@ First you need to bring it up by using following commands:
 ```
 sudo modprobe vcan
 sudo ip link add dev vcan0 type vcan
-sudo ip link set up vcan
+sudo ip link set up vcan0
 ```
 ##### Sending CAN frames
 You can generate CAN frame by using following command:
