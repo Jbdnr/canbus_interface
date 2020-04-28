@@ -1,7 +1,7 @@
 # CAN Interface
 CAN Interface package provides integration between ROS and CAN bus.
 
-# CAN Node
+## CAN Node
 `can_node` is a python script which implements bidirectional translation between ROS Topics and CAN frames.
 
 ### Subscribed topics
