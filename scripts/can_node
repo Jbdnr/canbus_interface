@@ -8,6 +8,7 @@ import numpy
 from std_msgs.msg import Float32
 from std_msgs.msg import Float64
 from ackermann_msgs.msg import AckermannDriveStamped
+import can_interface
 
 
 # IDENTYFIATORY PUBLIKOWANYCH RAMEK
@@ -96,6 +97,7 @@ def main():
     distance_pub = rospy.Publisher('distance', Float64, queue_size=10)
     angle_pub = rospy.Publisher('steering_angle', Float64, queue_size=10)
 
+    # converter = Converter(angle_lookup_table, speed_lookup_table, 0, 0)
     # TODO zmienic tak by nie trzeba bylo tworzyc obiektu z danymi
     can_sub = CanInterface(0x00, [0])
     can_sub.can_subscriber()
