@@ -6,14 +6,21 @@ from scipy import interpolate
 import pandas as pd
 
 class Converter:
-    def __init__(self, angle_file_path, angle_ref):
+
+    def __init__(self, file_path, csv_x, csv_y):
+
         # wczytanie danych z pliku csv
-        with open(angle_file_path, 'r') as f:
-            angle_lookup_table = pd.read_csv(f)
+        with open(file_path, 'r') as f:
+            lookup_table = pd.read_csv(f)
 
         # przypisanie funkcji interpolacji do zmiennej
-        self.function_angle_conv = interpolate.interp1d(angle_lookup_table['angle_measured'], angle_lookup_table['angle_ref'], fill_value='extrapolate', assume_sorted='false')
-        self.angle_ref = angle_ref
+        self.real2norm = interpolate.interp1d(lookup_table[csv_x], lookup_table[csv_y], fill_value='extrapolate', assume_sorted='false')
+        self.norm2real = interpolate.interp1d(lookup_table[csv_y], lookup_table[csv_x], fill_value='extrapolate', assume_sorted='false')
 
-    def angle_converter(self):
-        self.angle_coverted = self.function_angle_conv(self.angle_ref)
+    def real2norm(self, real_value):
+        angle_coverted = self.real2norm(real_value)
+        return angle_converted
+
+    def norm2real(self, norm_value):
+        angle_coverted = self.norm2real(norm_value)
+        return angle_coverted

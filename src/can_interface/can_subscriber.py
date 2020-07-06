@@ -31,7 +31,9 @@ class CanSubscriber:
                     self.received_distance = numpy.float64(struct.unpack('>d', recv_frame.data))
                 elif recv_id == int(str(self.angle_frame_id), 0):
                     # print("Otrzymano dane kata skretu")
+                    # self.received_angle = recv_frame.data<<48
                     self.received_angle = numpy.float64(struct.unpack('>d', recv_frame.data))
+                    print(self.received_angle)
                 # else:
                 #     print("Otrzymano nieznane dane")
                 #     print(recv_id)

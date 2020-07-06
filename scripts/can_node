@@ -31,20 +31,26 @@ def main():
     ros_distance_pub = rospy.Publisher('distance', Float64, queue_size=10)
     ros_angle_pub = rospy.Publisher('steering_angle', Float64, queue_size=10)
 
-    # converter = Converter(angle_lookup_table, speed_lookup_table, 0, 0)
+    angle_lookup_table = '/home/ubuntu/Workspaces/emax/src/can_interface/data/angle_data.csv' # TODO dac jako parametr
+    speed_lookup_table = '/home/ubuntu/Workspaces/emax/src/can_interface/data/speed_data.csv' # TODO dac jako parametr
+    angle_conv = ci.Converter(angle_lookup_table, 'angle_ref_in_rad', 'angle_measured_norm')
+    speed_conv = ci.Converter(speed_lookup_table, 'speed_ref_in_mps', 'speed_measured_norm')
 
     can_sub = ci.CanSubscriber(SPEED_FEEDBACK_ID, STEERING_FEEDBACK_ID, DISTANCE_FEEDBACK_ID)
     can_sub.can_subscriber()
 
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
+
         ros_speed_pub.publish(can_sub.received_speed)
         ros_distance_pub.publish(can_sub.received_distance)
-        ros_angle_pub.publish(can_sub.received_angle)
-        can_speed_pub = ci.CanPublisher(SPEED_PUB_ID, ackermann_speed)
+        ros_angle_pub.publish(angle_conv.norm2real(can_sub.received_angle))
+
+        can_speed_pub = ci.CanPublisher(SPEED_PUB_ID, speed_conv.real2norm(ackermann_speed))
         can_speed_pub.can_publisher()
-        can_angle_pub = ci.CanPublisher(STEERING_PUB_ID, ackermann_angle)
+        can_angle_pub = ci.CanPublisher(STEERING_PUB_ID, angle_conv.real2norm(ackermann_angle))
         can_angle_pub.can_publisher()
+
         rate.sleep()
 
 if __name__ == '__main__':

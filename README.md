@@ -28,6 +28,10 @@ sudo modprobe vcan
 sudo ip link add dev vcan0 type vcan
 sudo ip link set up vcan0
 ```
+Then you can run python node:
+```
+rosrun can_interface can_node
+```
 ##### Sending CAN frames
 You can generate CAN frame by using following command:
 ```
