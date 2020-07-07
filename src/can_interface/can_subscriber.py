@@ -3,19 +3,22 @@ import can
 import threading
 import struct
 import numpy
+import binascii
 
 class CanSubscriber:
 
     bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate=250000)
     stop_event = threading.Event()
+    MAX_DRIVE_MOTOR_SPEED = 3000 # RPM
+    MAX_STEERING_MOTOR_POSITION = 1000 # impulsy
 
-    def __init__(self, speed_frame_id, angle_frame_id, distance_frame_id):
-        self.speed_frame_id = speed_frame_id
-        self.angle_frame_id = angle_frame_id
-        self.distance_frame_id = distance_frame_id
-        self.received_speed = 0.0
-        self.received_distance = 0.0
-        self.received_angle = 0.0
+    def __init__(self, drive_motor_frame_id, steering_motor_frame_id):
+        self.drive_motor_frame_id = drive_motor_frame_id
+        self.steering_motor_frame_id = steering_motor_frame_id
+        self.drive_motor_speed = 0.0
+        self.drive_motor_position = 0.0
+        self.steering_motor_speed = 0.0
+        self.steering_motor_position = 0.0
 
     def receive(self, bus, stop_event):
         print("Start receiving can_frames")
@@ -23,17 +26,16 @@ class CanSubscriber:
             recv_frame = bus.recv(1)
             if recv_frame is not None:
                 recv_id = recv_frame.arbitration_id
-                if recv_id == int(str(self.speed_frame_id), 0):
-                    # print("Otrzymano dane predkosci")
-                    self.received_speed = numpy.float64(struct.unpack('>d', recv_frame.data))
-                elif recv_id == int(str(self.distance_frame_id), 0):
-                    # print("Otrzymano dane dystansu")
-                    self.received_distance = numpy.float64(struct.unpack('>d', recv_frame.data))
-                elif recv_id == int(str(self.angle_frame_id), 0):
-                    # print("Otrzymano dane kata skretu")
-                    # self.received_angle = recv_frame.data<<48
-                    self.received_angle = numpy.float64(struct.unpack('>d', recv_frame.data))
-                    print(self.received_angle)
+                if recv_id == int(str(self.drive_motor_frame_id), 0):
+                    # print("Otrzymano dane z silnika napedowego")
+                    self.drive_motor_speed = float(numpy.int32(struct.unpack('>i', recv_frame.data[0:4]))) / self.MAX_DRIVE_MOTOR_SPEED
+                    self.drive_motor_position = numpy.int32(struct.unpack('>i', recv_frame.data[4:8]))
+                    # print(binascii.hexlify(recv_frame.data[4:8]))
+                elif recv_id == int(str(self.steering_motor_frame_id), 0):
+                    # print("Otrzymano dane z silnika ukladu kierowniczego)
+                    self.steering_motor_speed = numpy.int32(struct.unpack('>i', recv_frame.data[0:4]))
+                    self.steering_motor_position = float(numpy.int32(struct.unpack('>i', recv_frame.data[4:8]))) / self.MAX_STEERING_MOTOR_POSITION
+                    print(self.steering_motor_position)
                 # else:
                 #     print("Otrzymano nieznane dane")
                 #     print(recv_id)
