@@ -17,11 +17,13 @@ STEERING_MOTOR_STATUS_ID = 0x34D
 ackermann_angle = 0.0
 ackermann_speed = 0.0
 
+
 def ackermann_callback(msg):
     global ackermann_angle
     ackermann_angle = msg.drive.steering_angle
     global ackermann_speed
     ackermann_speed = msg.drive.speed
+
 
 def main():
     rospy.init_node('can_node', anonymous=True)
@@ -30,8 +32,8 @@ def main():
     ros_distance_pub = rospy.Publisher('distance', Float64, queue_size=10)
     ros_angle_pub = rospy.Publisher('steering_angle', Float64, queue_size=10)
 
-    angle_lookup_table = '/home/ubuntu/Workspaces/emax/src/can_interface/data/angle_data.csv' # TODO dac jako parametr
-    speed_lookup_table = '/home/ubuntu/Workspaces/emax/src/can_interface/data/speed_data.csv' # TODO dac jako parametr
+    angle_lookup_table = '/home/ubuntu/Workspaces/emax/src/can_interface/data/angle_data.csv'  # TODO dac jako parametr
+    speed_lookup_table = '/home/ubuntu/Workspaces/emax/src/can_interface/data/speed_data.csv'  # TODO dac jako parametr
     angle_conv = ci.Converter(angle_lookup_table, 'angle_ref_in_rad', 'angle_measured_norm')
     speed_conv = ci.Converter(speed_lookup_table, 'speed_ref_in_mps', 'speed_measured_norm')
 
