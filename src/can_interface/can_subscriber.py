@@ -9,8 +9,8 @@ class CanSubscriber:
 
     bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate=250000)
     stop_event = threading.Event()
-    MAX_DRIVE_MOTOR_SPEED = 3000 # RPM
-    MAX_STEERING_MOTOR_POSITION = 1000 # impulsy
+    MAX_DRIVE_MOTOR_SPEED = 1000 # RPM
+    MAX_STEERING_MOTOR_POSITION = 2000 # impulsy
 
     def __init__(self, drive_motor_frame_id, steering_motor_frame_id):
         self.drive_motor_frame_id = drive_motor_frame_id
@@ -35,7 +35,7 @@ class CanSubscriber:
                     # print("Otrzymano dane z silnika ukladu kierowniczego)
                     self.steering_motor_speed = numpy.int32(struct.unpack('>i', recv_frame.data[0:4]))
                     self.steering_motor_position = float(numpy.int32(struct.unpack('>i', recv_frame.data[4:8]))) / self.MAX_STEERING_MOTOR_POSITION
-                    print(self.steering_motor_position)
+                    # print(self.steering_motor_position)
                 # else:
                 #     print("Otrzymano nieznane dane")
                 #     print(recv_id)
