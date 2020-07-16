@@ -12,6 +12,7 @@ before_script:
  - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
 
 catkin_make:
+  image: ros:melodic-ros-core
   stage: build
   script:
     - catkin_make
