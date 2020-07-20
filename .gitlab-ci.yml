@@ -8,10 +8,12 @@ cache:
     - ccache/
 
 before_script:
- - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git
+ - apt update >/dev/null && apt install -y git >/dev/null
+ - git clone https://gitlab.com/VictorLamoine/ros_gitlab_ci.git >/dev/null
  - source ros_gitlab_ci/gitlab-ci.bash >/dev/null
 
-catkin_make:
+melodic catkin_make:
+  image: ros:melodic-ros-core
   stage: build
   script:
     - catkin_make

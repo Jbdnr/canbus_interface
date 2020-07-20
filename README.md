@@ -5,7 +5,7 @@ CAN Interface package provides integration between ROS and CAN bus.
 `can_node` is a python script which implements bidirectional translation between ROS Topics and CAN frames.
 
 ### Subscribed topics
-- `/drive` ([ackermann_msgs/AckermannDrive](http://docs.ros.org/api/ackermann_msgs/html/msg/AckermannDrive.html)) This topic contains speed and steering angle data. The data is used to control vehicle.
+- `/drive` ([ackermann_msgs/AckermannDriveStamped](http://docs.ros.org/api/ackermann_msgs/html/msg/AckermannDriveStamped.html)) This topic contains speed and steering angle data. The data is used to control vehicle.
 
 ### Published topics
 - `/speed` ([std_msgs/Float64](http://docs.ros.org/melodic/api/std_msgs/html/msg/Float64.html))[10 Hz] Speed feedback received from can bus.
@@ -27,6 +27,10 @@ First you need to bring it up by using following commands:
 sudo modprobe vcan
 sudo ip link add dev vcan0 type vcan
 sudo ip link set up vcan0
+```
+Then you can run python node:
+```
+rosrun can_interface can_node
 ```
 ##### Sending CAN frames
 You can generate CAN frame by using following command:

@@ -19,6 +19,8 @@
   <exec_depend>ackermann_msgs</exec_depend>
   <exec_depend>python-can</exec_depend>
   <exec_depend>can-utils</exec_depend>
+  <exec_depend>python-scipy</exec_depend>
+  <exec_depend>python-pandas</exec_depend>
 
   <export>
     <!-- Other tools can request additional information be placed here -->
