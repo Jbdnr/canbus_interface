@@ -44,11 +44,11 @@ def main():
     channel = rospy.get_param('~can_channel', 'slcan0') # vcan or /dev/ttyACM0
     bitrate = rospy.get_param('~can_bitrate', 250000)
 
-    rospy.loginfo(angle_lookup_table)
-    rospy.loginfo(speed_lookup_table)
-    rospy.loginfo(bustype)
-    rospy.loginfo(channel)
-    rospy.loginfo(bitrate)
+    rospy.loginfo('\n angle_lookup_table: ' + angle_lookup_table)
+    rospy.loginfo('\n speed_lookup_table: ' + speed_lookup_table)
+    rospy.loginfo('bustype: ' + bustype)
+    rospy.loginfo('channel: ' + channel)
+    rospy.loginfo('bitrate: %i', bitrate)
 
     angle_conv = ci.Converter(angle_lookup_table, 'angle_ref_in_rad', 'angle_measured_norm')
     speed_conv = ci.Converter(speed_lookup_table, 'speed_ref_in_mps', 'speed_measured_norm')
@@ -60,6 +60,16 @@ def main():
                                 channel,
                                 bitrate)
     can_sub.can_subscriber()
+    can_speed_pub = ci.CanPublisher(
+                                    SPEED_PUB_ID,
+                                    bustype,
+                                    channel,
+                                    bitrate)
+    can_angle_pub = ci.CanPublisher(
+                                    STEERING_PUB_ID,
+                                    bustype,
+                                    channel,
+                                    bitrate)
 
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
@@ -67,11 +77,8 @@ def main():
         ros_speed_pub.publish(speed_conv.norm2real(can_sub.drive_motor_speed))
         ros_distance_pub.publish(can_sub.drive_motor_position)
         ros_angle_pub.publish(angle_conv.norm2real(can_sub.steering_motor_position))
-
-        can_speed_pub = ci.CanPublisher(SPEED_PUB_ID, speed_conv.real2norm(ackermann_speed))
-        can_speed_pub.can_publisher()
-        can_angle_pub = ci.CanPublisher(STEERING_PUB_ID, angle_conv.real2norm(ackermann_angle))
-        can_angle_pub.can_publisher()
+        can_speed_pub.can_publisher(speed_conv.real2norm(ackermann_speed))
+        can_angle_pub.can_publisher(angle_conv.real2norm(ackermann_angle))
 
         rate.sleep()
 
