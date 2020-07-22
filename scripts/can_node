@@ -40,13 +40,25 @@ def main():
         '~speed_lookup_table',
         os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/speed_data.csv"))
 
+    bustype = rospy.get_param('~can_bustype', 'socketcan')
+    channel = rospy.get_param('~can_bustype', 'vcan0')
+    bitrate = rospy.get_param('~can_bustype', 250000)
+
     rospy.loginfo(angle_lookup_table)
     rospy.loginfo(speed_lookup_table)
+    rospy.loginfo(bustype)
+    rospy.loginfo(channel)
+    rospy.loginfo(bitrate)
 
     angle_conv = ci.Converter(angle_lookup_table, 'angle_ref_in_rad', 'angle_measured_norm')
     speed_conv = ci.Converter(speed_lookup_table, 'speed_ref_in_mps', 'speed_measured_norm')
 
-    can_sub = ci.CanSubscriber(DRIVE_MOTOR_STATUS_ID, STEERING_MOTOR_STATUS_ID)
+    can_sub = ci.CanSubscriber(
+                                DRIVE_MOTOR_STATUS_ID,
+                                STEERING_MOTOR_STATUS_ID,
+                                bustype,
+                                channel,
+                                bitrate)
     can_sub.can_subscriber()
 
     rate = rospy.Rate(10)  # 10hz

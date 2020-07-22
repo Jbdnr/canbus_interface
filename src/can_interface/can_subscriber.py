@@ -7,18 +7,18 @@ import binascii
 
 class CanSubscriber:
 
-    bus = can.interface.Bus(bustype='socketcan', channel='vcan0', bitrate=250000)
     stop_event = threading.Event()
     MAX_DRIVE_MOTOR_SPEED = 1000 # RPM
     MAX_STEERING_MOTOR_POSITION = 2000 # impulsy
 
-    def __init__(self, drive_motor_frame_id, steering_motor_frame_id):
+    def __init__(self, drive_motor_frame_id, steering_motor_frame_id, bustype, channel, bitrate):
         self.drive_motor_frame_id = drive_motor_frame_id
         self.steering_motor_frame_id = steering_motor_frame_id
         self.drive_motor_speed = 0.0
         self.drive_motor_position = 0.0
         self.steering_motor_speed = 0.0
         self.steering_motor_position = 0.0
+        self.bus = can.interface.Bus(bustype=bustype, channel=channel, bitrate=bitrate)
 
     def receive(self, bus, stop_event):
         print("Start receiving can_frames")
