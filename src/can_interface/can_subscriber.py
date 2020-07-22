@@ -8,7 +8,7 @@ import binascii
 class CanSubscriber:
 
     stop_event = threading.Event()
-    MAX_DRIVE_MOTOR_SPEED = 1000 # RPM
+    MAX_DRIVE_MOTOR_SPEED = 600 # RPM (max 1000)
     MAX_STEERING_MOTOR_POSITION = 2000 # impulsy
 
     def __init__(self, drive_motor_frame_id, steering_motor_frame_id, bustype, channel, bitrate):
@@ -28,13 +28,13 @@ class CanSubscriber:
                 recv_id = recv_frame.arbitration_id
                 if recv_id == int(str(self.drive_motor_frame_id), 0):
                     # print("Otrzymano dane z silnika napedowego")
-                    self.drive_motor_speed = float(numpy.int32(struct.unpack('>i', recv_frame.data[0:4]))) / self.MAX_DRIVE_MOTOR_SPEED
-                    self.drive_motor_position = numpy.int32(struct.unpack('>i', recv_frame.data[4:8]))
+                    self.drive_motor_speed = float(numpy.int32(struct.unpack('<i', recv_frame.data[0:4]))) / self.MAX_DRIVE_MOTOR_SPEED
+                    self.drive_motor_position = numpy.int32(struct.unpack('<i', recv_frame.data[4:8]))
                     # print(binascii.hexlify(recv_frame.data[4:8]))
                 elif recv_id == int(str(self.steering_motor_frame_id), 0):
                     # print("Otrzymano dane z silnika ukladu kierowniczego)
-                    self.steering_motor_speed = numpy.int32(struct.unpack('>i', recv_frame.data[0:4]))
-                    self.steering_motor_position = float(numpy.int32(struct.unpack('>i', recv_frame.data[4:8]))) / self.MAX_STEERING_MOTOR_POSITION
+                    self.steering_motor_speed = numpy.int32(struct.unpack('<i', recv_frame.data[0:4]))
+                    self.steering_motor_position = float(numpy.int32(struct.unpack('<i', recv_frame.data[4:8]))) / self.MAX_STEERING_MOTOR_POSITION
                     # print(self.steering_motor_position)
                 # else:
                 #     print("Otrzymano nieznane dane")

@@ -22,7 +22,7 @@ class CanPublisher:
         # 0x0000 to stan neutralny
         # 0xC800 (51 200) to max wychylenie
         data = int(abs(data) * 51200) # dostajemy 0-1 a chcemy 0-51200
-        bytes = struct.pack('>H', data) # big-endian unsigned short
+        bytes = struct.pack('<H', data) # little-endian unsigned short
         data_frame = sign + list(bytes) # znak na poczatku ramki danych
         return bytearray(data_frame)    # ostatecznie dostajemy ramke 4 bajtowa
 

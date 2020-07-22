@@ -49,6 +49,18 @@ candump vcan0
 ##### Monitoring ROS topics
 Using [rqt](http://wiki.ros.org/rqt) package is good option to sending and receiving ROS topics.
 
+### slcan TODO
+Plug in USB device and then:
+```
+ls /dev
+sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM0
+sudo ip link set up slcan0
+```
+## Diagnostic tools
+```
+candump slcan0,B1D:F00
+cansniffer slcan0
+```
 ## Additional Information
 - https://elinux.org/Bringing_CAN_interface_up
 - https://sgframework.readthedocs.io/en/latest/cantutorial.html
