@@ -40,8 +40,8 @@ def main():
         '~speed_lookup_table',
         os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/speed_data.csv"))
 
-    bustype = rospy.get_param('~can_bustype', 'socketcan') #socketcan or slcan
-    channel = rospy.get_param('~can_channel', 'slcan0') # vcan or /dev/ttyACM0
+    bustype = rospy.get_param('~can_bustype', 'socketcan')
+    channel = rospy.get_param('~can_channel', 'slcan0')  # vcan0 or slcan0
     bitrate = rospy.get_param('~can_bitrate', 250000)
 
     rospy.loginfo('\n angle_lookup_table: ' + angle_lookup_table)

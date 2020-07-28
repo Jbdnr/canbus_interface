@@ -61,6 +61,11 @@ sudo ip link set up slcan0
 candump slcan0,B1D:F00
 cansniffer slcan0
 ```
+If you run into error `sendto: No buffer space available` just type:
+```
+sudo ifconfig slcan0 txqueuelen 1000
+
+```
 ## Additional Information
 - https://elinux.org/Bringing_CAN_interface_up
 - https://sgframework.readthedocs.io/en/latest/cantutorial.html
