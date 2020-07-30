@@ -10,7 +10,7 @@ class CanSubscriber:
 
     stop_event = threading.Event()
     MAX_DRIVE_MOTOR_SPEED = 600  # RPM (max 1000)
-    MAX_STEERING_MOTOR_POSITION = 400  # impulsy TODO: sprawdzic max
+    MAX_STEERING_MOTOR_POSITION = 370  # impulsy
 
     def __init__(self, drive_motor_frame_id, steering_motor_frame_id, bustype, channel, bitrate):
         self.drive_motor_frame_id = drive_motor_frame_id
