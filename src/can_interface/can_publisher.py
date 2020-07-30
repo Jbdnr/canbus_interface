@@ -26,7 +26,7 @@ class CanPublisher:
 
     def can_publisher(self, frame_data):
         frame_data = self.get_pathology_data_frame(frame_data)
-        frame = can.Message(arbitration_id=self.frame_id, data=frame_data)
+        frame = can.Message(arbitration_id=self.frame_id, is_extended_id=False, data=frame_data)
         try:
             self.bus.send(frame)
         except can.CanError:

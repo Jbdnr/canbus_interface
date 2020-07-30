@@ -46,14 +46,14 @@ class CanSubscriber:
                     self.steering_motor_speed = numpy.uint32(struct.unpack('<I', recv_frame.data[0:4]))  # TODO
                     steering_motor_position = float(numpy.int32(struct.unpack('<I', recv_frame.data[4:8])))
                     if steering_motor_position > 2147483647:
-                        print("skreca w prawo")
+                        # print("skreca w prawo")
                         steering_motor_position = int("FFFFFFFF", 16) - steering_motor_position
                     else:
-                        print("skreca w lewo")
+                        # print("skreca w lewo")
                         steering_motor_position = - steering_motor_position
                     steering_motor_position_norm = float(steering_motor_position) / self.MAX_STEERING_MOTOR_POSITION
                     self.steering_motor_position = steering_motor_position_norm
-                    print(steering_motor_position)
+                    # print(steering_motor_position)
                 # else:
                 #     print("Otrzymano nieznane dane")
                 #     print(recv_id)
