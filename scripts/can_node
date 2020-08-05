@@ -77,6 +77,7 @@ def main():
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
 
+        global last_distance
         if last_distance is not None:
             diff = can_sub.drive_motor_position - last_distance
 
@@ -91,7 +92,7 @@ def main():
             ros_speed_pub.publish(speed_conv.norm2real(speed))
 
         last_distance = can_sub.drive_motor_position
-        ros_distance_pub.publish(can_sub.drive_motor_position)
+        ros_distance_pub.publish(can_sub.drive_motor_position * DISTANCE_MECH_CONST)
         ros_angle_pub.publish(angle_conv.norm2real(can_sub.steering_motor_position))
         can_speed_pub.can_publisher(speed_conv.real2norm(ackermann_speed))
         can_angle_pub.can_publisher(angle_conv.real2norm(ackermann_angle))
