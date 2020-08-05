@@ -53,7 +53,7 @@ Using [rqt](http://wiki.ros.org/rqt) package is good option to sending and recei
 Plug in USB device and then:
 ```
 ls /dev
-sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM0
+sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM8
 sudo ip link set up slcan0
 ```
 ## Diagnostic tools
@@ -70,3 +70,4 @@ sudo ifconfig slcan0 txqueuelen 1000
 - https://elinux.org/Bringing_CAN_interface_up
 - https://sgframework.readthedocs.io/en/latest/cantutorial.html
 - https://python-can.readthedocs.io/en/master/
+- https://msadowski.github.io/linux-static-port/
