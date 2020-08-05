@@ -9,7 +9,7 @@ import os.path
 
 # IDENTYFIATORY PUBLIKOWANYCH RAMEK
 SPEED_PUB_ID = 0x1A  # TBD
-STEERING_PUB_ID = 557  # TBD
+STEERING_PUB_ID = 0xFF  # TBD
 
 # IDENTYFIATORY SUBSKRYBOWANYCH RAMEK
 DRIVE_MOTOR_STATUS_ID = 0x14D
@@ -73,6 +73,8 @@ def main():
 
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
+
+        can_sub.drive_motor_position
 
         ros_speed_pub.publish(speed_conv.norm2real(can_sub.drive_motor_speed))
         ros_distance_pub.publish(can_sub.drive_motor_position)

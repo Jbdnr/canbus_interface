@@ -39,7 +39,15 @@ class CanSubscriber:
                         drive_motor_speed = - drive_motor_speed
                     drive_motor_speed_norm = float(drive_motor_speed) / self.MAX_DRIVE_MOTOR_SPEED
                     self.drive_motor_speed = drive_motor_speed_norm
-                    self.drive_motor_position = numpy.uint32(struct.unpack('<I', recv_frame.data[4:8]))  # TODO
+
+                    drive_motor_position = numpy.uint32(struct.unpack('<I', recv_frame.data[4:8]))  # TODO
+                    if drive_motor_position > 2147483647:
+                        # print("jedzie do przodu")
+                        drive_motor_position = int("FFFFFFFF", 16) - drive_motor_position
+                    else:
+                        # print("jedzie do tylu")
+                        drive_motor_position = - drive_motor_position
+                    self.drive_motor_position = drive_motor_position
 
                 elif recv_id == int(str(self.steering_motor_frame_id), 0):
                     # print("Otrzymano dane z silnika ukladu kierowniczego)
