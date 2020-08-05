@@ -48,7 +48,7 @@ class CanSubscriber:
                     else:
                         # print("jedzie do tylu")
                         drive_motor_position = - drive_motor_position
-                    self.drive_motor_position = drive_motor_position * DISTANCE_MECH_CONST
+                    self.drive_motor_position = drive_motor_position * self.DISTANCE_MECH_CONST
 
                 elif recv_id == int(str(self.steering_motor_frame_id), 0):
                     # print("Otrzymano dane z silnika ukladu kierowniczego)
