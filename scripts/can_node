@@ -7,6 +7,8 @@ from ackermann_msgs.msg import AckermannDriveStamped
 import can_interface as ci
 import os.path
 
+DISTANCE_MECH_CONST = 0.0180963046
+
 # IDENTYFIATORY PUBLIKOWANYCH RAMEK
 SPEED_PUB_ID = 0x1A  # TBD
 STEERING_PUB_ID = 0xFF  # TBD
@@ -18,6 +20,7 @@ STEERING_MOTOR_STATUS_ID = 0x34D
 ackermann_angle = 0.0
 ackermann_speed = 0.0
 
+last_distance = None
 
 def ackermann_callback(msg):
     global ackermann_angle
@@ -74,9 +77,20 @@ def main():
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
 
-        can_sub.drive_motor_position
+        if last_distance is not None:
+            diff = can_sub.drive_motor_position - last_distance
 
-        ros_speed_pub.publish(speed_conv.norm2real(can_sub.drive_motor_speed))
+            if diff > 2147483647:
+                diff = diff - int("FFFFFFFF", 16)
+
+            if diff < -2147483647:
+                diff = int("FFFFFFFF", 16) - diff
+
+            diff = diff * DISTANCE_MECH_CONST
+            speed = 10 * diff
+            ros_speed_pub.publish(speed_conv.norm2real(speed))
+
+        last_distance = can_sub.drive_motor_position
         ros_distance_pub.publish(can_sub.drive_motor_position)
         ros_angle_pub.publish(angle_conv.norm2real(can_sub.steering_motor_position))
         can_speed_pub.can_publisher(speed_conv.real2norm(ackermann_speed))

@@ -11,7 +11,6 @@ class CanSubscriber:
     stop_event = threading.Event()
     MAX_DRIVE_MOTOR_SPEED = 600  # RPM (max 1000)
     MAX_STEERING_MOTOR_POSITION = 370  # impulsy
-    DISTANCE_MECH_CONST = 0.0180963046
 
     def __init__(self, drive_motor_frame_id, steering_motor_frame_id, bustype, channel, bitrate):
         self.drive_motor_frame_id = drive_motor_frame_id
@@ -48,7 +47,7 @@ class CanSubscriber:
                     else:
                         # print("jedzie do tylu")
                         drive_motor_position = - drive_motor_position
-                    self.drive_motor_position = drive_motor_position * self.DISTANCE_MECH_CONST
+                    self.drive_motor_position = drive_motor_position
 
                 elif recv_id == int(str(self.steering_motor_frame_id), 0):
                     # print("Otrzymano dane z silnika ukladu kierowniczego)
