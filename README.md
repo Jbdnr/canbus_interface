@@ -20,6 +20,12 @@ Install required software by typing following command:
 rosdep install can_interface
 ```
 
+You have to install newest verion of `python-can` manually:
+
+```
+pip install python-can
+```
+
 ### Testing
 You can test functionality of this package by using virtual interface.
 First you need to bring it up by using following commands:
@@ -48,6 +54,11 @@ candump vcan0
 
 ##### Monitoring ROS topics
 Using [rqt](http://wiki.ros.org/rqt) package is good option to sending and receiving ROS topics.
+
+### canplayer
+```
+canplayer vcan0=slcan0 -v -I name.log
+```
 
 ### slcan TODO
 Plug in USB device and then:

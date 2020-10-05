@@ -7,8 +7,6 @@ from ackermann_msgs.msg import AckermannDriveStamped
 import can_interface as ci
 import os.path
 
-DISTANCE_MECH_CONST = 0.0180963046
-
 # IDENTYFIATORY PUBLIKOWANYCH RAMEK
 SPEED_PUB_ID = 0x1A  # TBD
 STEERING_PUB_ID = 0xFF  # TBD
@@ -44,7 +42,7 @@ def main():
         os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/speed_data.csv"))
 
     bustype = rospy.get_param('~can_bustype', 'socketcan')
-    channel = rospy.get_param('~can_channel', 'slcan0')  # vcan0 or slcan0
+    channel = rospy.get_param('~can_channel', 'vcan0')  # vcan0 or slcan0
     bitrate = rospy.get_param('~can_bitrate', 250000)
 
     rospy.loginfo('\n angle_lookup_table: ' + angle_lookup_table)
@@ -87,12 +85,11 @@ def main():
             if diff < -2147483647:
                 diff = int("FFFFFFFF", 16) - diff
 
-            diff = diff * DISTANCE_MECH_CONST
             speed = 10 * diff
             ros_speed_pub.publish(speed_conv.norm2real(speed))
 
         last_distance = can_sub.drive_motor_position
-        ros_distance_pub.publish(can_sub.drive_motor_position * DISTANCE_MECH_CONST)
+        ros_distance_pub.publish(can_sub.drive_motor_position)
         ros_angle_pub.publish(angle_conv.norm2real(can_sub.steering_motor_position))
         can_speed_pub.can_publisher(speed_conv.real2norm(ackermann_speed))
         can_angle_pub.can_publisher(angle_conv.real2norm(ackermann_angle))
