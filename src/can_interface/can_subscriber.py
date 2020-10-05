@@ -4,6 +4,7 @@ import threading
 import struct
 import numpy
 import binascii
+import sys
 
 
 class CanSubscriber:
@@ -12,6 +13,8 @@ class CanSubscriber:
     MAX_DRIVE_MOTOR_SPEED = 600  # RPM (max 1000)
     MAX_STEERING_MOTOR_POSITION = 370  # impulsy
     DISTANCE_MECH_CONST = 0.0180963046
+    MAX_DISTANCE = DISTANCE_MECH_CONST * 2147483647
+    MIN_DISTANCE = DISTANCE_MECH_CONST * (-2147483648)
 
     def __init__(self, drive_motor_frame_id, steering_motor_frame_id, bustype, channel, bitrate):
         self.drive_motor_frame_id = drive_motor_frame_id
