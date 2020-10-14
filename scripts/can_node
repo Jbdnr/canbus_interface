@@ -21,6 +21,7 @@ ackermann_speed = 0.0
 
 last_distance = None
 
+
 def ackermann_callback(msg):
     global ackermann_angle
     ackermann_angle = msg.drive.steering_angle
@@ -80,14 +81,12 @@ def main():
 
         time_now = rospy.get_time()
 
-        
         if last_distance is not None:
-            distance_diff = can_sub.drive_motor_position - last_distance # metry
-            time_diff = time_now - time_past # sekundy
-            speed = distance_diff / time_diff # m/s
+            distance_diff = can_sub.drive_motor_position - last_distance  # metry
+            time_diff = time_now - time_past  # sekundy
+            speed = distance_diff / time_diff  # m/s
             ros_speed_pub.publish(speed)
 
-        
         ros_distance_pub.publish(can_sub.drive_motor_position)
         ros_angle_pub.publish(angle_conv.norm2real(can_sub.steering_motor_position))
         can_speed_pub.can_publisher(speed_conv.real2norm(ackermann_speed))

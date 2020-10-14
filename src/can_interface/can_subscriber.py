@@ -33,12 +33,15 @@ class CanSubscriber:
                 recv_id = recv_frame.arbitration_id
 
                 if recv_id == int(str(self.drive_motor_frame_id), 0):
-                    # self.drive_motor_speed = - float(numpy.int32(struct.unpack('<I', recv_frame.data[0:4]))) / self.MAX_DRIVE_MOTOR_SPEED                 
-                    self.drive_motor_position = - numpy.int32(struct.unpack('<I', recv_frame.data[4:8])) * self.DISTANCE_MECH_CONST
+                    # self.drive_motor_speed = - float(numpy.int32(struct.unpack('<I', recv_frame.data[0:4])))\
+                    # / self.MAX_DRIVE_MOTOR_SPEED
+                    self.drive_motor_position = - numpy.int32(struct.unpack('<I', recv_frame.data[4:8]))\
+                        * self.DISTANCE_MECH_CONST
 
                 elif recv_id == int(str(self.steering_motor_frame_id), 0):
-                    # self.steering_motor_speed = numpy.uint32(struct.unpack('<I', recv_frame.data[0:4]))  
-                    self.steering_motor_position = float(numpy.int32(struct.unpack('<I', recv_frame.data[4:8]))) / self.MAX_STEERING_MOTOR_POSITION
+                    # self.steering_motor_speed = numpy.uint32(struct.unpack('<I', recv_frame.data[0:4]))
+                    self.steering_motor_position = float(numpy.int32(struct.unpack('<I', recv_frame.data[4:8])))\
+                        / self.MAX_STEERING_MOTOR_POSITION
 
         print("Stopped receiving can_frames")
 
