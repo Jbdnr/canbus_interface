@@ -6,10 +6,11 @@ from std_msgs.msg import Float64
 from ackermann_msgs.msg import AckermannDriveStamped
 import can_interface as ci
 import os.path
+import sys
 
 # IDENTYFIATORY PUBLIKOWANYCH RAMEK
 SPEED_PUB_ID = 0x1A  # TBD
-STEERING_PUB_ID = 0x1B  # TBD
+STEERING_PUB_ID = 0xFF  # TBD
 
 # IDENTYFIATORY SUBSKRYBOWANYCH RAMEK
 DRIVE_MOTOR_STATUS_ID = 0x14D
@@ -17,6 +18,8 @@ STEERING_MOTOR_STATUS_ID = 0x34D
 
 ackermann_angle = 0.0
 ackermann_speed = 0.0
+
+last_distance = None
 
 
 def ackermann_callback(msg):
@@ -40,27 +43,57 @@ def main():
         '~speed_lookup_table',
         os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/speed_data.csv"))
 
-    rospy.loginfo(angle_lookup_table)
-    rospy.loginfo(speed_lookup_table)
+    bustype = rospy.get_param('~can_bustype', 'socketcan')
+    channel = rospy.get_param('~can_channel', 'slcan0')  # vcan0 or slcan0
+    bitrate = rospy.get_param('~can_bitrate', 250000)
+
+    rospy.loginfo('\n angle_lookup_table: ' + angle_lookup_table)
+    rospy.loginfo('\n speed_lookup_table: ' + speed_lookup_table)
+    rospy.loginfo('bustype: ' + bustype)
+    rospy.loginfo('channel: ' + channel)
+    rospy.loginfo('bitrate: %i', bitrate)
 
     angle_conv = ci.Converter(angle_lookup_table, 'angle_ref_in_rad', 'angle_measured_norm')
     speed_conv = ci.Converter(speed_lookup_table, 'speed_ref_in_mps', 'speed_measured_norm')
 
-    can_sub = ci.CanSubscriber(DRIVE_MOTOR_STATUS_ID, STEERING_MOTOR_STATUS_ID)
+    can_sub = ci.CanSubscriber(
+                                DRIVE_MOTOR_STATUS_ID,
+                                STEERING_MOTOR_STATUS_ID,
+                                bustype,
+                                channel,
+                                bitrate)
     can_sub.can_subscriber()
+    can_speed_pub = ci.CanPublisher(
+                                    SPEED_PUB_ID,
+                                    bustype,
+                                    channel,
+                                    bitrate)
+    can_angle_pub = ci.CanPublisher(
+                                    STEERING_PUB_ID,
+                                    bustype,
+                                    channel,
+                                    bitrate)
+
+    global last_distance
 
     rate = rospy.Rate(10)  # 10hz
     while not rospy.is_shutdown():
 
-        ros_speed_pub.publish(speed_conv.norm2real(can_sub.drive_motor_speed))
+        time_now = rospy.get_time()
+
+        if last_distance is not None:
+            distance_diff = can_sub.drive_motor_position - last_distance  # metry
+            time_diff = time_now - time_past  # sekundy
+            speed = distance_diff / time_diff  # m/s
+            ros_speed_pub.publish(speed)
+
         ros_distance_pub.publish(can_sub.drive_motor_position)
         ros_angle_pub.publish(angle_conv.norm2real(can_sub.steering_motor_position))
+        can_speed_pub.can_publisher(speed_conv.real2norm(ackermann_speed))
+        can_angle_pub.can_publisher(angle_conv.real2norm(ackermann_angle))
 
-        can_speed_pub = ci.CanPublisher(SPEED_PUB_ID, speed_conv.real2norm(ackermann_speed))
-        can_speed_pub.can_publisher()
-        can_angle_pub = ci.CanPublisher(STEERING_PUB_ID, angle_conv.real2norm(ackermann_angle))
-        can_angle_pub.can_publisher()
-
+        last_distance = can_sub.drive_motor_position
+        time_past = time_now
         rate.sleep()
 
 if __name__ == '__main__':

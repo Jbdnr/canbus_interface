@@ -5,6 +5,7 @@ from os.path import dirname, abspath, join
 from scipy import interpolate
 import pandas as pd
 
+
 class Converter:
 
     def __init__(self, file_path, csv_x, csv_y):
@@ -14,8 +15,16 @@ class Converter:
             lookup_table = pd.read_csv(f)
 
         # przypisanie funkcji interpolacji do zmiennej
-        self.real2norm = interpolate.interp1d(lookup_table[csv_x], lookup_table[csv_y], fill_value='extrapolate', assume_sorted='false')
-        self.norm2real = interpolate.interp1d(lookup_table[csv_y], lookup_table[csv_x], fill_value='extrapolate', assume_sorted='false')
+        self.real2norm = interpolate.interp1d(
+                                                lookup_table[csv_x],
+                                                lookup_table[csv_y],
+                                                fill_value='extrapolate',
+                                                assume_sorted='false')
+        self.norm2real = interpolate.interp1d(
+                                                lookup_table[csv_y],
+                                                lookup_table[csv_x],
+                                                fill_value='extrapolate',
+                                                assume_sorted='false')
 
     def real2norm(self, real_value):
         angle_coverted = self.real2norm(real_value)

@@ -20,6 +20,12 @@ Install required software by typing following command:
 rosdep install can_interface
 ```
 
+You have to install newest verion of `python-can` manually:
+
+```
+pip install python-can
+```
+
 ### Testing
 You can test functionality of this package by using virtual interface.
 First you need to bring it up by using following commands:
@@ -49,7 +55,30 @@ candump vcan0
 ##### Monitoring ROS topics
 Using [rqt](http://wiki.ros.org/rqt) package is good option to sending and receiving ROS topics.
 
+### canplayer
+```
+canplayer vcan0=slcan0 -v -I name.log
+```
+
+### slcan TODO
+Plug in USB device and then:
+```
+ls /dev
+sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM8
+sudo ip link set up slcan0
+```
+## Diagnostic tools
+```
+candump slcan0,B1D:F00
+cansniffer slcan0
+```
+If you run into error `sendto: No buffer space available` just type:
+```
+sudo ifconfig slcan0 txqueuelen 1000
+
+```
 ## Additional Information
 - https://elinux.org/Bringing_CAN_interface_up
 - https://sgframework.readthedocs.io/en/latest/cantutorial.html
 - https://python-can.readthedocs.io/en/master/
+- https://msadowski.github.io/linux-static-port/
