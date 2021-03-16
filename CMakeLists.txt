@@ -16,7 +16,7 @@ roslint_python(
 
 catkin_package(CATKIN_DEPENDS std_msgs ackermann_msgs)
 
-install(PROGRAMS scripts/can_node
+install(PROGRAMS scripts/can_node slcan.sh port_setup.sh
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
