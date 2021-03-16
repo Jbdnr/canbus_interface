@@ -1,0 +1,1 @@
+KERNEL=="ttyACM*", ATTRS{idVendor}=="TODO", SYMLINK+="emaks/can_usb", MODE="0666"

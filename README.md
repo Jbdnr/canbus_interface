@@ -59,13 +59,21 @@ Using [rqt](http://wiki.ros.org/rqt) package is good option to sending and recei
 ```
 canplayer vcan0=slcan0 -v -I name.log
 ```
-
-### slcan TODO
+### Linux static port
+Execute following script to configure static port:
+```
+./port_setup.sh
+```
+### slcan
 Plug in USB device and then:
 ```
 ls /dev
 sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM8
 sudo ip link set up slcan0
+```
+Alternatively, with linux static port setup you can execute following script:
+```
+./slcan.sh
 ```
 ## Diagnostic tools
 ```
