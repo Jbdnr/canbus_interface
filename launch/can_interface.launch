@@ -1,0 +1,6 @@
+ <launch>
+  <node 
+      name="can_node" 
+      type="can_node" 
+      pkg="can_interface" />     
+</launch>
