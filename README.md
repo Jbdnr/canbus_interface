@@ -68,7 +68,7 @@ Execute following script to configure static port:
 Plug in USB device and then:
 ```
 ls /dev
-sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM8
+sudo slcand -o -s8 -t hw -S 1000000 /dev/ttyACM0
 sudo ip link set up slcan0
 ```
 Alternatively, with linux static port setup you can execute following script:
