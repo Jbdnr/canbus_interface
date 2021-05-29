@@ -27,9 +27,9 @@ class Converter:
                                                 assume_sorted='false')
 
     def real2norm(self, real_value):
-        angle_coverted = self.real2norm(real_value)
+        angle_converted = self.real2norm(real_value)
         return angle_converted
 
     def norm2real(self, norm_value):
-        angle_coverted = self.norm2real(norm_value)
-        return angle_coverted
+        angle_converted = self.norm2real(norm_value)
+        return angle_converted
