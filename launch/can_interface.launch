@@ -2,5 +2,6 @@
   <node 
       name="can_node" 
       type="can_node" 
-      pkg="can_interface" />     
+      pkg="can_interface"
+      output="screen" />     
 </launch>
