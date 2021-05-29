@@ -47,7 +47,7 @@ def main():
 
     bustype = rospy.get_param('~can_bustype', 'socketcan')
     channel = rospy.get_param('~can_channel', 'slcan0')  # vcan0 or slcan0
-    bitrate = rospy.get_param('~can_bitrate', 250000)
+    bitrate = rospy.get_param('~can_bitrate', 1000000)
 
     rospy.loginfo('\n angle_lookup_table: ' + angle_lookup_table)
     rospy.loginfo('\n speed_lookup_table: ' + speed_lookup_table)
