@@ -1,1 +1,1 @@
-KERNEL=="ttyACM*", ATTRS{idVendor}=="TODO", SYMLINK+="emaks/can_usb", MODE="0666", RUN+="/usr/local/bin/slcan.sh"
+KERNEL=="ttyACM*", ATTRS{idVendor}=="0483", SYMLINK+="emaks/can_usb", MODE="0666", RUN+="/usr/local/bin/slcan.sh"
